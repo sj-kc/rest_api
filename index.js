@@ -20,8 +20,40 @@ const server = http.createServer((req, res) => {
   req.on('end', () => {
     buffer += decoder.end();
 
-    res.end('hello you');
+    const routing = routesHandler[pathTrimmed]
+      ? routesHandler[pathTrimmed]
+      : routes.notFound;
+
+    const data = {
+      path: pathTrimmed,
+      queries,
+      httpMethod,
+      headers,
+    };
+
+    routing(data, (status, payload) => {
+      const payloadString = JSON.stringify(payload);
+
+      res.writeHead(status);
+      res.setHeader('Content-Type', 'application/json');
+
+      res.end(payloadString);
+    });
   });
 });
+
+const routes = {
+  ping() {
+    return 'pong';
+  },
+
+  notFound(data, callback) {
+    callback(400, { error: 'Not found' });
+  },
+};
+
+const routesHandler = {
+  ping: routes.ping,
+};
 
 server.listen(3000);
