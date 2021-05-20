@@ -4,9 +4,13 @@ const { StringDecoder } = require('string_decoder');
 
 const _helper = require('./helpers/data');
 
-_helper.read({
+_helper.edit({
   folder: 'users',
   file: 'users',
+  data: {
+    name: 'Sung',
+    lastname: 'Castro',
+  },
   getData(err = false, data = {}) {
     console.log(err, data);
   },
