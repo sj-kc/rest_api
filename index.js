@@ -2,7 +2,15 @@ const http = require('http');
 const url = require('url');
 const { StringDecoder } = require('string_decoder');
 
-require('./helpers/data');
+const _helper = require('./helpers/data');
+
+_helper.read({
+  folder: 'users',
+  file: 'users',
+  getData(err = false, data = {}) {
+    console.log(err, data);
+  },
+});
 
 const server = http.createServer((req, res) => {
   const urlParsed = url.parse(req.url, true);

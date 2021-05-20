@@ -28,18 +28,16 @@ const lib = {
       });
     });
   },
-};
 
-lib.create({
-  folder: 'users',
-  file: 'users',
-  data: {
-    name: 'sung',
-    lastname: 'Castro',
+  read(props) {
+    const { folder, file, getData } = props;
+    const dataFile = this.getFile(folder, file);
+
+    fs.readFile(dataFile, 'utf8', (err, data) => {
+      if (err) return getData(err);
+      return getData(undefined, data);
+    });
   },
-  getData(err = null, data = null) {
-    console.log(err);
-  },
-});
+};
 
 module.exports = lib;
