@@ -2,6 +2,8 @@ const http = require('http');
 const url = require('url');
 const { StringDecoder } = require('string_decoder');
 
+require('./helpers/data');
+
 const server = http.createServer((req, res) => {
   const urlParsed = url.parse(req.url, true);
 
@@ -31,11 +33,11 @@ const server = http.createServer((req, res) => {
       headers,
     };
 
-    routing(data, (status, payload) => {
+    routing(data, (status = 200, payload = {}) => {
       const payloadString = JSON.stringify(payload);
 
-      res.writeHead(status);
       res.setHeader('Content-Type', 'application/json');
+      res.writeHead(status);
 
       res.end(payloadString);
     });
@@ -43,17 +45,22 @@ const server = http.createServer((req, res) => {
 });
 
 const routes = {
-  ping() {
-    return 'pong';
+  ping(data, callback) {
+    callback(200, { data: 'pong' });
+  },
+
+  users(data, callback) {
+    callback();
   },
 
   notFound(data, callback) {
-    callback(400, { error: 'Not found' });
+    callback(404, { error: 'Not found' });
   },
 };
 
 const routesHandler = {
   ping: routes.ping,
+  users: routes.users,
 };
 
 server.listen(3000);
