@@ -60,6 +60,15 @@ const lib = {
       });
     });
   },
+
+  remove(props) {
+    const { folder, file, getData } = props;
+    const dataFile = this.getFile(folder, file);
+
+    fs.unlink(dataFile, (err) => {
+      if (err) return getData(err);
+    });
+  },
 };
 
 module.exports = lib;
