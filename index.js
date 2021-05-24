@@ -30,6 +30,7 @@ const server = http.createServer((req, res) => {
       queries,
       httpMethod,
       headers,
+      payload: JSON.parse(buffer),
     };
 
     routing(data, (status = 200, payload = {}) => {
