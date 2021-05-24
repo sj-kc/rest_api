@@ -1,16 +1,7 @@
 const http = require('http');
 const url = require('url');
 const { StringDecoder } = require('string_decoder');
-
-const _helper = require('./helpers/data');
-
-_helper.remove({
-  folder: 'users',
-  file: 'users',
-  getData(err = false, data = {}) {
-    console.log(err, data);
-  },
-});
+const controller = require('./controllers/controller');
 
 const server = http.createServer((req, res) => {
   const urlParsed = url.parse(req.url, true);
@@ -32,7 +23,7 @@ const server = http.createServer((req, res) => {
 
     const routing = routesHandler[pathTrimmed]
       ? routesHandler[pathTrimmed]
-      : routes.notFound;
+      : routesHandler.notFound;
 
     const data = {
       path: pathTrimmed,
@@ -52,23 +43,10 @@ const server = http.createServer((req, res) => {
   });
 });
 
-const routes = {
-  ping(data, callback) {
-    callback(200, { data: 'pong' });
-  },
-
-  users(data, callback) {
-    callback();
-  },
-
-  notFound(data, callback) {
-    callback(404, { error: 'Not found' });
-  },
-};
-
 const routesHandler = {
-  ping: routes.ping,
-  users: routes.users,
+  ping: controller.ping,
+  users: controller.users,
+  notFound: controller.notFound,
 };
 
 server.listen(3000);
