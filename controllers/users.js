@@ -1,3 +1,5 @@
+const _data = require('../helpers/data');
+
 function users(data, callback) {
   const validMethods = ['post', 'get', 'put', 'delete'];
 
@@ -18,6 +20,12 @@ function users(data, callback) {
       if (phone.length !== 10) {
         return callback(500, { error: 'Min 10 characters' });
       }
+
+      _data.read({ folder: 'users', file: 'users', getData });
+
+      const getData = (err, payload) => {
+        if (err) return callback({ err });
+      };
     },
   };
 
