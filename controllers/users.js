@@ -1,3 +1,4 @@
+const _helper = require('../helpers/helpers');
 const _data = require('../helpers/data');
 
 function users(data, callback) {
@@ -18,14 +19,31 @@ function users(data, callback) {
       }
 
       if (phone.length !== 10) {
-        return callback(500, { error: 'Min 10 characters' });
+        return callback(500, { error: 'Phone min 10 characters' });
       }
 
-      _data.read({ folder: 'users', file: 'users', getData });
+      _data.read({ folder: 'users', file: phone }, (err = undefined) => {
+        if (!err) return callback(400, { error: 'User already exist' });
 
-      const getData = (err, payload) => {
-        if (err) return callback({ err });
-      };
+        const hashedPassword = _helper.hash(password);
+
+        if (!hashedPassword) {
+          return callback(500, { error: 'Cant hash password' });
+        }
+
+        const user = {
+          firstname,
+          lastname,
+          phone,
+          hashedPassword,
+          agreement: true,
+        };
+
+        _data.create({ folder: 'users', file: phone, data: user }, (err) => {
+          if (err) return callback(400, { err });
+          callback(200, { user });
+        });
+      });
     },
   };
 

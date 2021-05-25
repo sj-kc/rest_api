@@ -9,8 +9,8 @@ const lib = {
     return dataFile;
   },
 
-  create(props) {
-    const { folder, file, data, getData } = props;
+  create(props, getData) {
+    const { folder, file, data } = props;
     const dataFile = this.getFile(folder, file);
 
     fs.open(dataFile, 'wx', (err, file) => {
@@ -28,18 +28,22 @@ const lib = {
     });
   },
 
-  read(props) {
-    const { folder, file, getData } = props;
+  read(props, getData) {
+    const { folder, file } = props;
     const dataFile = this.getFile(folder, file);
 
     fs.readFile(dataFile, 'utf8', (err, data) => {
-      if (err) return getData(err);
-      return getData(undefined, data);
+      if (!err && data) {
+        const parsedData = JSON.parse(data);
+        return getData(undefined, parsedData);
+      }
+
+      getData(err);
     });
   },
 
-  edit(props) {
-    const { folder, file, data, getData } = props;
+  edit(props, getData) {
+    const { folder, file, data } = props;
     const dataFile = this.getFile(folder, file);
 
     fs.open(dataFile, 'r+', (err, file) => {
@@ -61,8 +65,8 @@ const lib = {
     });
   },
 
-  remove(props) {
-    const { folder, file, getData } = props;
+  remove(props, getData) {
+    const { folder, file } = props;
     const dataFile = this.getFile(folder, file);
 
     fs.unlink(dataFile, (err) => {
