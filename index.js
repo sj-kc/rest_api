@@ -34,7 +34,6 @@ const server = http.createServer((req, res) => {
     };
 
     routing(data, (status = 200, payload = {}) => {
-      console.log(payload);
 
       const payloadString = JSON.stringify(payload);
 

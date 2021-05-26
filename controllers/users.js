@@ -35,7 +35,6 @@ function users(data, callback) {
           firstname,
           lastname,
           phone,
-          hashedPassword,
           agreement: true,
         };
 

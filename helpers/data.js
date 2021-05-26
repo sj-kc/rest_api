@@ -23,6 +23,8 @@ const lib = {
 
         fs.close(file, (err) => {
           if (err) return getData(err);
+
+          return getData(false);
         });
       });
     });
@@ -37,7 +39,6 @@ const lib = {
         const parsedData = JSON.parse(data);
         return getData(undefined, parsedData);
       }
-
       getData(err);
     });
   },
