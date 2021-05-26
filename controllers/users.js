@@ -7,6 +7,21 @@ function users(data, callback) {
   if (!validMethods.includes(data.httpMethod)) return callback(405);
 
   const handler = {
+    get(data, callback) {
+      const phone = data.payload.phone;
+
+      if (!phone) return callback(400, { error: 'Phone is required' });
+      if (phone.length !== 10) {
+        return callback(400, { error: 'Phone is 10 characters' });
+      }
+
+      _data.read({ folder: 'users', file: phone }, (err, user) => {
+        if (err) return callback(400, { error: 'User does not exist' });
+
+        return callback(400, { user });
+      });
+    },
+
     post(data, callback) {
       const firstname = data.payload.firstname;
       const lastname = data.payload.lastname;
@@ -19,7 +34,7 @@ function users(data, callback) {
       }
 
       if (phone.length !== 10) {
-        return callback(500, { error: 'Phone min 10 characters' });
+        return callback(500, { error: 'Phone is 10 characters' });
       }
 
       _data.read({ folder: 'users', file: phone }, (err = undefined) => {
@@ -35,11 +50,15 @@ function users(data, callback) {
           firstname,
           lastname,
           phone,
+          hashedPassword,
           agreement: true,
         };
 
         _data.create({ folder: 'users', file: phone, data: user }, (err) => {
           if (err) return callback(400, { err });
+
+          delete user.hashedPassword;
+
           callback(200, { user });
         });
       });
