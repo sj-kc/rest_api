@@ -55,7 +55,7 @@ const lib = {
 
         const stringData = JSON.stringify(data);
 
-        fs.writeFile(file, stringData, (err) => {
+        fs.writeFile(file, stringData, (err, dataFile) => {
           if (err) getData(err);
 
           fs.close(file, (err) => {
