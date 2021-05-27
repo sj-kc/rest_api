@@ -9,15 +9,25 @@ function users(data, callback) {
   const handler = {
     get(data, callback) {
       const phone = data.payload.phone;
+      const password = data.payload.password;
 
       if (!phone) return callback(400, { error: 'Phone is required' });
       if (phone.length !== 10) {
         return callback(400, { error: 'Phone is 10 characters' });
       }
 
-      _data.read({ folder: 'users', file: phone }, (err, user) => {
-        if (err) return callback(400, { error: 'User does not exist' });
+      if (!password) return callback(400, { error: 'Missing password' });
 
+      const hashedPassword = _helper.hash(password);
+
+      _data.read({ folder: 'users', file: phone }, (err, user) => {
+        if (err) {
+          return callback(400, { error: 'User does not exist' });
+        } else if (user.hashedPassword !== hashedPassword) {
+          return callback(400, { error: 'Wrong password' });
+        }
+
+        delete user.hashedPassword;
         return callback(400, { user });
       });
     },
@@ -29,7 +39,7 @@ function users(data, callback) {
       const password = data.payload.password;
       const agreement = data.payload.agreement;
 
-      if (!firstname && !lastname && !phone && !password && !agreement) {
+      if (!firstname || !lastname || !phone || !password || !agreement) {
         return callback(500, { error: 'Missing required fields' });
       }
 
@@ -62,6 +72,30 @@ function users(data, callback) {
           callback(200, { user });
         });
       });
+    },
+
+    put(data, callback) {
+      const firstname = data.payload.firstname;
+      const lastname = data.payload.lastname;
+      const phone = data.payload.phone;
+      const password = data.payload.password;
+
+      if (!phone) return callback(400, { error: 'Phone is required' });
+      if (phone.length !== 10) {
+        return callback(400, { error: 'Phone is 10 characters' });
+      }
+
+      if (!password) return callback(400, { error: 'Missing password' });
+      const hashedPassword = _helper.hash(password);
+
+      const payload = {
+        firstname,
+        lastname,
+        phone,
+        password,
+      };
+
+      _data.edit({ folder: 'users', file: phone, data: payload }, (err) => {});
     },
   };
 
